@@ -11,17 +11,12 @@ const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
         origin: '*', // Allow requests from any origin
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST' , 'PUT'],
         credentials: true,
     }
 });
 
-app.use(cors({
-    origin: '*', // Allow any origin
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
-    credentials: true,
-}));
+app.use(cors());
 
 app.use(bodyParser.json());
 
@@ -68,7 +63,7 @@ ChatMessage.sync();
 app.post('/search-user', async (req, res) => {
     const { username } = req.body;
     const users = await sequelize.query(
-        'SELECT * FROM users WHERE username LIKE :username',
+        'SELECT * FROM users WHERE name LIKE :username',
         { replacements: { username: `%${username}%` }, type: sequelize.QueryTypes.SELECT }
     );
     res.json(users);
@@ -117,7 +112,7 @@ io.on('connection', (socket) => {
         const { sender_id, receiver_id, message } = data;
         const time = new Date().toTimeString().split(' ')[0];
         const date = new Date().toISOString().split('T')[0];
-
+        let newChat = false;
         let chat = await sequelize.query(
             `SELECT c.id FROM Chats c 
              JOIN chatusers cu1 ON c.id = cu1.chat_id 
@@ -132,6 +127,7 @@ io.on('connection', (socket) => {
                 { chat_id: chat.id, user_id: sender_id },
                 { chat_id: chat.id, user_id: receiver_id }
             ]);
+            newChat = true;
         } else {
             chat = await Chat.findByPk(chat[0].id);
             chat.last_message = message;
@@ -147,12 +143,17 @@ io.on('connection', (socket) => {
             message,
             time,
             date,
-            chat_id: chat.id
+            chat_id: chat.id,
         });
 
         console.log(chat.id)
         // Send message only to sender and receiver
+        if(newChat){
+            io.emit(`new-chat-${sender_id}`,{chat: chat.id , receiver_id :receiver_id })
+        }
         io.emit(`receiveMessage-${chat.id}`, newMessage);
+        io.emit(`chat-${receiver_id}`, newMessage);
+        io.emit(`chat-${sender_id}`, newMessage);
     });
 
     socket.on('disconnect', () => {
