@@ -20,8 +20,8 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-const sequelize = new Sequelize('reel-it-commerce', 'root', '', {
-    host: 'localhost',
+const sequelize = new Sequelize('reel-it-commerce', 'root', 'naveed', {
+    host: '127.0.0.1',
     dialect: 'mysql',
 });
 
