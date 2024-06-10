@@ -99,6 +99,15 @@ app.get('/messages/:chatId', async (req, res) => {
     res.json(messages);
 });
 
+app.get('/app/messages/:chatId', async (req, res) => {
+    const { chatId } = req.params;
+    const messages = await ChatMessage.findAll({
+        where: { chat_id: chatId },
+        order: [['date', 'DESC'], ['time', 'DESC']]
+    });
+    res.json(messages);
+});
+
 // Socket.io connections
 io.on('connection', (socket) => {
     console.log('New client connected');
