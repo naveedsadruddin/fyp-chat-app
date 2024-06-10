@@ -75,9 +75,9 @@ app.get('/chat-listing/:userId', async (req, res) => {
         const chats = await sequelize.query(
             `SELECT c.*, cu.user_id AS participant_user_id,  u.name AS participant_user_name,u.email AS participant_user_email,cu2.user_id AS requesting_user_id,u2.name AS requesting_user_name,u2.email AS requesting_user_email
             FROM chats c 
-            JOIN ChatUser cu ON c.id = cu.chat_id 
+            JOIN ChatUsers cu ON c.id = cu.chat_id 
             JOIN users u ON cu.user_id = u.id
-            LEFT JOIN ChatUser cu2 ON c.id = cu2.chat_id 
+            LEFT JOIN ChatUsers cu2 ON c.id = cu2.chat_id 
             LEFT JOIN users u2 ON cu2.user_id = u2.id 
             WHERE cu2.user_id = :userId
             AND cu.user_id != :userId
@@ -115,8 +115,8 @@ io.on('connection', (socket) => {
         let newChat = false;
         let chat = await sequelize.query(
             `SELECT c.id FROM Chats c 
-             JOIN ChatUser cu1 ON c.id = cu1.chat_id 
-             JOIN ChatUser cu2 ON c.id = cu2.chat_id 
+             JOIN ChatUsers cu1 ON c.id = cu1.chat_id 
+             JOIN ChatUsers cu2 ON c.id = cu2.chat_id 
              WHERE cu1.user_id = :sender_id AND cu2.user_id = :receiver_id`,
             { replacements: { sender_id, receiver_id }, type: sequelize.QueryTypes.SELECT }
         );
