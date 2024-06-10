@@ -86,7 +86,7 @@ app.get('/chat-listing/:userId', async (req, res) => {
         );
         res.json(chats);
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching chat listings.' });
+        res.status(500).json({ error: error});
     }
 });
 
