@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize('reel-it-commerce', 'root', null, {
+const sequelize = new Sequelize('reel-it-commerce', 'root', 'naveed', {
     host: '127.0.0.1',
     dialect: 'mysql'
 });
