@@ -74,7 +74,7 @@ app.get('/chat-listing/:userId', async (req, res) => {
     try {
         const chats = await sequelize.query(
             `SELECT c.*, cu.user_id AS participant_user_id,  u.name AS participant_user_name,u.email AS participant_user_email,cu2.user_id AS requesting_user_id,u2.name AS requesting_user_name,u2.email AS requesting_user_email
-            FROM chats c 
+            FROM Chats c 
             JOIN ChatUsers cu ON c.id = cu.chat_id 
             JOIN users u ON cu.user_id = u.id
             LEFT JOIN ChatUsers cu2 ON c.id = cu2.chat_id 
